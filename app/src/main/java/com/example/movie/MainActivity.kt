@@ -3,41 +3,30 @@ package com.example.movie
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.paint
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import coil.compose.AsyncImage
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.example.movie.Constant.MOVIE_IMAGE_BASE_URL
-import com.example.movie.model.BackdropSize
-import com.example.movie.model.SearchResponse
-import com.example.movie.model.UIState
-import com.example.movie.screens.OnBoarding.OnBoardingScreen
-import com.example.movie.screens.popular.PopularMoviesViewModel
-import com.example.movie.ui.theme.GreenBlue
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.example.movie.navigation.NavGraph
+import com.example.movie.navigation.popUpToTop
+import com.example.movie.screens.OnBoarding.BottonNavigationItems
+import com.example.movie.screens.OnBoarding.Screens
 import com.example.movie.ui.theme.MovieTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -47,126 +36,64 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MovieTheme {
-                com.example.movie.navigation.NavGraph()
+                val  navController = rememberNavController()
+                var showBottomBar by rememberSaveable { mutableStateOf(true) }
+                val  navBackStackEntry by navController.currentBackStackEntryAsState()
 
+                showBottomBar = when ( navBackStackEntry?.destination?.route){
+                    Screens.OnBoarding.route -> false
+                    else -> true
+                }
+                val navigationSelectedItem = rememberSaveable{
+                    mutableIntStateOf(0)
+                }
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    bottomBar = {
+                        if (showBottomBar){
+                            NavigationBar {
+                                BottomNavigationBar(navigationSelectedItem, navController)
+                            }
+                       }
+                    }
+                ) {paddingValues ->
+                    Box (modifier = Modifier.padding(paddingValues)){
+                        NavGraph(navController)
+                    }
+
+
+                }
             }
         }
     }
 }
 
+@Composable
+private fun RowScope.BottomNavigationBar(
+    navigationSelectedItem: MutableState<Int>,
+    navController: NavHostController
+) {
+    BottonNavigationItems().bottomNavigationItems()
+        .forEachIndexed { index, navigationItem ->
+            //iterating all items with their respective indexes
+            NavigationBarItem(
+                selected = index == navigationSelectedItem.value,
+                label = {
+                    Text(navigationItem.label)
+                },
+                icon = {
+                    Icon(
+                        navigationItem.icon,
+                        contentDescription = navigationItem.label
+                    )
+                },
+                onClick = {
+                    navigationSelectedItem.value = index
+                    navController.navigate(navigationItem.route) {
+                        popUpToTop(navController)
+                    }
+                }
+            )
+        }
+}
 
-
-//@OptIn(ExperimentalGlideComposeApi::class)
-//@Composable
-//fun MainScreen(navController: NavController,
-//               popularMoviesState:MutableState<UIState<SearchResponse>>){
-//
-//{
-//    when (val result = popularMoviesState.value) {
-//        is UIState.Success -> {
-//            Box(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .background(MaterialTheme.colorScheme.primary)
-//            ) {
-//                Box(modifier = Modifier
-//                    .fillMaxWidth()
-//                    .fillMaxHeight(0.4f)
-//                    .paint(
-//                        painterResource(id = R.drawable.background),
-//                        contentScale = ContentScale.FillBounds,
-//                        sizeToIntrinsics = false
-//                    )
-//                )
-//
-//                LazyColumn(
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//
-//                ) {
-//
-//                    items(result.data?.results.orEmpty()) {
-//
-//                        Text(
-//                            text = it.title.orEmpty(),
-//                            modifier = Modifier.padding(12.dp)
-//                        )
-//                        AsyncImage(
-//                            model = "${MOVIE_IMAGE_BASE_URL}${BackdropSize.original}/${it.posterPath}",
-//                            contentDescription = "movie image"
-//                       )
-//
-//
-//                    }
-//
-//                }
-//            }
-//
-//        }
-//
-//        is UIState.Empty -> {}
-//        is UIState.Loading -> {}
-//        is UIState.Error -> {}
-//    }
-//
-//}
-//
-//
-//    Column(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .background(GreenBlue)
-//    ) {
-//        when (val result = popularMoviesState.value) {
-//            is UIState.Success -> {
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                        .background(GreenBlue),
-//                    contentAlignment = Alignment.TopCenter
-//                )
-//                {
-//                    Box(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .fillMaxHeight(0.4f)
-//                            .background(GreenBlue)
-//                            .rotate(-90f)
-//                            .paint(
-//                                // Replace with your image id
-//                                painterResource(id = R.drawable.background),
-//                                contentScale = ContentScale.FillWidth,
-//                                sizeToIntrinsics = false
-//                            )
-//                    )
-//
-//                    LazyColumn(
-//                        modifier = Modifier
-//                            .fillMaxSize()
-//                    ) {
-//                        items(result.data?.results.orEmpty()) {
-//                            GlideImage(
-//                                model = "${MOVIE_IMAGE_BASE_URL}${BackdropSize.w300}/${it.posterPath}",
-//                                contentDescription = "",
-//                                modifier = Modifier
-//                                    .padding(12.dp)
-//                                    .fillParentMaxWidth(),
-//                            )
-//
-//                            Text(
-//                                text = it.title.orEmpty(),
-//                                modifier = Modifier.padding(12.dp)
-//                            )
-//                        }
-//                    }
-//                }
-//
-//            }
-//
-//            is UIState.Empty -> {}
-//            is UIState.Error -> {}
-//            is UIState.Loading -> {}
-//
-//        }
-//    }
-//}

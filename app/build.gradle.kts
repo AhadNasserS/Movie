@@ -116,7 +116,9 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.0.5")
     //implementation(libs.androidx.datastore.preferences)
     implementation("androidx.datastore:datastore-preferences:1.1.1")
-
+//
+    debugImplementation("com.github.chuckerteam.chucker:library:4.0.0")
+    releaseImplementation("com.github.chuckerteam.chucker:library-no-op:4.0.0")
 
 
 }

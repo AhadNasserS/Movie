@@ -16,6 +16,8 @@ sealed class Scrrens(val rout: String) {
     object endOfONboardingScreen : Scrrens("EndOfOnBoarding")
     object PopularMoviesScreen : Scrrens("PopularMoviesScreen")
     object OnboardingScreen : Scrrens("OnBoarding")
+
+
 }
 
 
