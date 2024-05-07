@@ -4,12 +4,19 @@ import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.apimovie.presentation.screens.search.SearchScreen
 import com.example.movie.screens.OnBoarding.OnBoardingScreen
 import com.example.movie.screens.OnBoarding.OnBoardingViewModel
+import com.example.movie.screens.OnBoarding.Screens
+import com.example.movie.screens.popular.PopularMovieSearchViewModel
+import com.example.movie.screens.popular.PopularMoviesDetailsViewModel
 import com.example.movie.screens.popular.PopularMoviesViewModel
+import com.example.moviescomposeapp.presentation.screens.detail.MovieDetailsScreen
 import com.example.moviescomposeapp.presentation.screens.popular.PopularMoviesScreen
 
 sealed class Scrrens(val rout: String) {
@@ -40,6 +47,22 @@ fun NavGraph(
             PopularMoviesScreen(navController , viewModel.popularMoviesState)
         }
 
+        composable("${Screens.MovieDetails.route}/{id}", arguments = listOf(
+            navArgument("id"){
+                type= NavType.IntType
+            }
+        )){
+            val viewModel = hiltViewModel<PopularMoviesDetailsViewModel>()
+            MovieDetailsScreen(viewModel=viewModel, int = it.arguments?.getInt("id"),)
+        }
+
+        composable(Screens.Search.route) {
+            val viewModel= hiltViewModel<PopularMovieSearchViewModel>()
+            SearchScreen(navController , viewModel.popularMoviesState){
+                viewModel.searchIntMovies(it)
+            }
+        }
+
     }
 
 }
@@ -47,6 +70,7 @@ fun NavGraph(
 fun NavOptionsBuilder.popUpToTop(navController: NavHostController){
     popUpTo(navController.currentBackStackEntry?.destination?.route?: return){
         inclusive = true
+        saveState = true
     }
 }
 

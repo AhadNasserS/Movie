@@ -9,14 +9,21 @@ import okio.IOException
 
 class MoviePagingSource(
     private val movieAPi: MovieAPi,
+    private val isSearchEndPoint: Boolean,
+    private val searchQuery: String? = null
 ): PagingSource<Int , Results>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Results> {
         return try {
             val currentPage = params.key ?:1
-            val movies = movieAPi.getUpcoming(
-                apiKey = BuildConfig.TMDB_API_KEY,
-                page = currentPage
-            )
+            val movies = if (isSearchEndPoint)
+                movieAPi.getSearch(
+                    page = currentPage,
+                    query = searchQuery.orEmpty(),
+                )
+            else
+                movieAPi.getUpcoming(
+                    page = currentPage
+                )
             LoadResult.Page(
                 data= movies.body()?.results.orEmpty(),
                 prevKey =   if(currentPage==1) null else currentPage-1,

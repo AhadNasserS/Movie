@@ -91,6 +91,8 @@ private fun RowScope.BottomNavigationBar(
                     navigationSelectedItem.value = index
                     navController.navigate(navigationItem.route) {
                         popUpToTop(navController)
+                        restoreState= true
+                        launchSingleTop = true
                     }
                 }
             )

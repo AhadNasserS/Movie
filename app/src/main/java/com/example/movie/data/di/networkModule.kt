@@ -34,7 +34,6 @@ object NetworkModule {
     @Singleton
     fun provideOkHttpClient(
         @ApplicationContext context: Context
-
     ): OkHttpClient {
         val httpclient = OkHttpClient.Builder()
             .addInterceptor(ChuckerInterceptor(context))
