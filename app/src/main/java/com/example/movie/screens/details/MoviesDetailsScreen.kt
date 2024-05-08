@@ -23,7 +23,7 @@ import com.example.movie.Constant
 import com.example.movie.R
 import com.example.movie.model.BackdropSize
 import com.example.movie.model.UIState
-import com.example.movie.screens.popular.PopularMoviesDetailsViewModel
+import com.example.movie.screens.details.PopularMoviesDetailsViewModel
 
 @Composable
 fun MovieDetailsScreen(int: Int?, viewModel: PopularMoviesDetailsViewModel) {

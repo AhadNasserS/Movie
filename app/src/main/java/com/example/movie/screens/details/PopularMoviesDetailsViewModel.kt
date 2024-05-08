@@ -1,4 +1,4 @@
-package com.example.movie.screens.popular
+package com.example.movie.screens.details
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf

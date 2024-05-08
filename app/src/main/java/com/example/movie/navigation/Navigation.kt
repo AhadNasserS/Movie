@@ -13,9 +13,11 @@ import com.example.apimovie.presentation.screens.search.SearchScreen
 import com.example.movie.screens.OnBoarding.OnBoardingScreen
 import com.example.movie.screens.OnBoarding.OnBoardingViewModel
 import com.example.movie.screens.OnBoarding.Screens
-import com.example.movie.screens.popular.PopularMovieSearchViewModel
-import com.example.movie.screens.popular.PopularMoviesDetailsViewModel
+import com.example.movie.screens.search.PopularMovieSearchViewModel
+import com.example.movie.screens.details.PopularMoviesDetailsViewModel
 import com.example.movie.screens.popular.PopularMoviesViewModel
+import com.example.movie.screens.profile.ProfileScreen
+import com.example.movie.screens.profile.UserProfileViewModel
 import com.example.moviescomposeapp.presentation.screens.detail.MovieDetailsScreen
 import com.example.moviescomposeapp.presentation.screens.popular.PopularMoviesScreen
 
@@ -61,6 +63,10 @@ fun NavGraph(
             SearchScreen(navController , viewModel.popularMoviesState){
                 viewModel.searchIntMovies(it)
             }
+        }
+        composable(Screens.Profile.route) {
+            val viewModel= hiltViewModel<UserProfileViewModel>()
+            ProfileScreen(viewModel,navController)
         }
 
     }

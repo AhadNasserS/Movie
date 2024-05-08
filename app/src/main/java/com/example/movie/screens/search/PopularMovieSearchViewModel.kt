@@ -1,4 +1,4 @@
-package com.example.movie.screens.popular
+package com.example.movie.screens.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
